@@ -124,7 +124,7 @@ mvn -pl core clean verify
 core/target/site/jacoco/index.html
 ```
 
-当前 core 模块 JaCoCo 行覆盖率为 84.59%，满足 60% 要求。
+当前 core 模块 JaCoCo 行覆盖率为 86.81%，满足 60% 要求。
 
 ## 运行 JMH
 
@@ -180,6 +180,7 @@ docker exec java-redis redis-cli TTL stats:eventType
 - Day2：`core/src/main/java/edu/gpnu/bigdata/service/StatsService.java`、`report/user-behavior-report.txt`
 - Day3：`benchmark/src/main/java/edu/gpnu/bigdata/benchmark/StreamBenchmark.java`、`docs/jmh-report.md`
 - Day4：`docs/code-review.md`
+- 端到端验收：`docs/e2e-verification.md`
 
 ## Git 仓库
 

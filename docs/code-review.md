@@ -20,7 +20,7 @@
 | parallelStream 与自定义 Collector | 通过 | `StatsService.countByEventTypeParallel()`、`FunnelCollector` |
 | CompletableFuture | 通过 | `CacheWarmupService` |
 | Javalin API | 通过 | `web/src/main/java/edu/gpnu/bigdata/web/ApiServer.java` |
-| JUnit5、Mockito、JaCoCo | 通过 | 25 个单元测试，Mockito 隔离 DAO/Redis，JaCoCo 行覆盖率 84.59% |
+| JUnit5、Mockito、JaCoCo | 通过 | 26 个单元测试，Mockito 隔离 DAO/Redis，JaCoCo 行覆盖率 86.81% |
 | JMH | 通过 | `StreamBenchmark`、`docs/jmh-report.md` |
 | README 与运行脚本 | 通过 | `README.md`、`scripts/*.ps1` |
 
@@ -30,6 +30,7 @@
 - 数据库访问使用 try-with-resources，`UserLogDao` 不泄漏 `PreparedStatement` 和 `ResultSet`。
 - 批量写入使用事务和 batch，适合 10 万日志规模。
 - Redis 缓存统一封装在 `CacheService`，缓存命中和刷新有日志。
+- 已补充渠道漏斗、设备漏斗、每日事件分布等多维度下钻统计。
 - 统计逻辑以不可变输入列表为基础，`parallelStream` 没有共享可变状态。
 - JMH 报告如实记录并行流在当前数据规模下更慢，没有伪造性能结论。
 
@@ -44,6 +45,6 @@
 
 ## 剩余风险
 
-- API 与 Redis/MySQL 的端到端验证依赖 Docker 服务已启动。
+- API 与 Redis/MySQL 已完成端到端验证，记录位于 `docs/e2e-verification.md`。
 - 本机使用 JDK 25，运行时会输出 Maven/JDK 对部分旧 API 的警告，但不影响编译和测试结果。
 - 未实现前端仪表盘，加分项暂未做；当前目标是满足老师硬性要求。

@@ -31,7 +31,7 @@ public class CacheService {
         this.jedis = jedis;
     }
 
-    public Optional<StatsSnapshot> readStats() {
+    public synchronized Optional<StatsSnapshot> readStats() {
         if (jedis.exists(
                 EVENT_TYPE_KEY,
                 CHANNEL_KEY,
@@ -72,7 +72,7 @@ public class CacheService {
         ));
     }
 
-    public void writeStats(StatsSnapshot snapshot) {
+    public synchronized void writeStats(StatsSnapshot snapshot) {
         writeLongMap(EVENT_TYPE_KEY, snapshot.eventTypeStats());
         writeLongMap(CHANNEL_KEY, snapshot.channelStats());
         writeLongMap(DEVICE_KEY, snapshot.deviceStats());

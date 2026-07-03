@@ -12,7 +12,77 @@ web: 33334
 miniprogram: 33333
 app: 33333
 
-三、漏斗转化率
+三、按设备统计
+ios: 25000
+windows: 25000
+mac: 25000
+android: 25000
+
+四、每日 PV / UV
+2026-07-02 PV: 3334, UV: 3334
+2026-07-01 PV: 3334, UV: 3334
+2026-06-30 PV: 3334, UV: 3334
+2026-06-29 PV: 3334, UV: 3334
+2026-06-28 PV: 3334, UV: 3334
+2026-06-27 PV: 3334, UV: 3334
+2026-06-26 PV: 3334, UV: 3334
+2026-06-25 PV: 3334, UV: 3334
+2026-06-24 PV: 3334, UV: 3334
+2026-06-23 PV: 3334, UV: 3334
+2026-06-22 PV: 3333, UV: 3333
+2026-06-21 PV: 3333, UV: 3333
+2026-06-20 PV: 3333, UV: 3333
+2026-06-19 PV: 3333, UV: 3333
+2026-06-18 PV: 3333, UV: 3333
+2026-06-17 PV: 3333, UV: 3333
+2026-06-16 PV: 3333, UV: 3333
+2026-06-15 PV: 3333, UV: 3333
+2026-06-14 PV: 3333, UV: 3333
+2026-06-13 PV: 3333, UV: 3333
+2026-06-12 PV: 3333, UV: 3333
+2026-06-11 PV: 3333, UV: 3333
+2026-06-10 PV: 3333, UV: 3333
+2026-06-09 PV: 3333, UV: 3333
+2026-06-08 PV: 3333, UV: 3333
+2026-06-07 PV: 3333, UV: 3333
+2026-06-06 PV: 3333, UV: 3333
+2026-06-05 PV: 3333, UV: 3333
+2026-06-04 PV: 3333, UV: 3333
+2026-07-03 PV: 3333, UV: 3333
+
+五、每日事件类型分布
+2026-07-02: {view=2000, cart=667, order=667}
+2026-07-01: {view=2000, cart=667, order=667}
+2026-06-30: {view=2000, cart=667, pay=334, order=333}
+2026-06-29: {view=2000, cart=667, pay=334, order=333}
+2026-06-28: {view=1667, cart=1000, pay=334, order=333}
+2026-06-27: {view=1667, cart=1000, pay=334, order=333}
+2026-06-26: {view=1667, cart=1000, pay=334, order=333}
+2026-06-25: {view=1667, cart=1000, pay=334, order=333}
+2026-06-24: {view=1667, cart=1000, pay=334, order=333}
+2026-06-23: {view=2001, cart=667, order=666}
+2026-06-22: {view=2000, cart=667, order=666}
+2026-06-21: {view=2000, cart=667, order=666}
+2026-06-20: {view=2000, cart=667, pay=333, order=333}
+2026-06-19: {view=2000, cart=667, pay=333, order=333}
+2026-06-18: {view=1667, cart=1000, pay=333, order=333}
+2026-06-17: {view=1667, cart=1000, pay=333, order=333}
+2026-06-16: {view=1667, cart=1000, pay=333, order=333}
+2026-06-15: {view=1667, cart=1000, pay=333, order=333}
+2026-06-14: {view=1667, cart=1000, pay=333, order=333}
+2026-06-13: {view=2000, order=667, cart=666}
+2026-06-12: {view=2000, order=667, cart=666}
+2026-06-11: {view=2000, order=667, cart=666}
+2026-06-10: {view=2000, order=334, cart=666, pay=333}
+2026-06-09: {view=2000, order=334, cart=666, pay=333}
+2026-06-08: {view=1666, cart=1000, order=334, pay=333}
+2026-06-07: {view=1666, cart=1000, order=334, pay=333}
+2026-06-06: {view=1666, cart=1000, order=334, pay=333}
+2026-06-05: {view=1666, cart=1000, order=334, pay=333}
+2026-06-04: {view=1666, cart=1000, order=334, pay=333}
+2026-07-03: {view=1999, cart=667, order=667}
+
+六、总体漏斗转化率
 view 用户数: 27500
 cart 用户数: 12500
 order 用户数: 6500
@@ -21,7 +91,18 @@ view -> cart: 45.45%
 cart -> order: 52.0%
 order -> pay: 53.85%
 
-四、商品类别 Top 5
+七、按渠道漏斗下钻
+web view=18334, cart=8334, order=4333, pay=2333, view->cart=45.46%, cart->order=51.99%, order->pay=53.84%
+miniprogram view=18333, cart=8333, order=4334, pay=2333, view->cart=45.45%, cart->order=52.01%, order->pay=53.83%
+app view=18333, cart=8333, order=4333, pay=2334, view->cart=45.45%, cart->order=52.0%, order->pay=53.87%
+
+八、按设备漏斗下钻
+ios view=7000, cart=3000, order=1500, pay=1000, view->cart=42.86%, cart->order=50.0%, order->pay=66.67%
+windows view=7000, cart=3000, order=1500, pay=1000, view->cart=42.86%, cart->order=50.0%, order->pay=66.67%
+mac view=6500, cart=3500, order=1500, pay=1000, view->cart=53.85%, cart->order=42.86%, order->pay=66.67%
+android view=7000, cart=3000, order=2000, pay=500, view->cart=42.86%, cart->order=66.67%, order->pay=25.0%
+
+九、商品类别 Top 5
 clothing: 18824
 food: 18824
 digital: 18824

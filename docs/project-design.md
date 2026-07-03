@@ -9,6 +9,7 @@
 - 生成 5 万独立用户和 10 万条用户行为日志。
 - 使用 MySQL 存储用户和行为日志。
 - 使用 Stream API 统计事件类型、渠道、每日 PV/UV、漏斗转化率和商品类别 TopN。
+- 支持按日期、渠道、设备进行多维度下钻分析。
 - 使用 Redis 缓存统计结果，并设置过期时间。
 - 使用 CompletableFuture 启动时异步预热缓存。
 - 使用 Javalin 提供 REST API。
@@ -70,7 +71,10 @@
 | 按设备统计 | `StatsService.countByDevice()` |
 | 每日 PV | `StatsService.dailyPv()` |
 | 每日 UV | `StatsService.dailyUv()` |
+| 每日事件类型分布 | `StatsService.dailyEventTypeStats()` |
 | 漏斗转化率 | `FunnelCollector`、`StatsService.funnelConversion()` |
+| 渠道漏斗下钻 | `StatsService.funnelByChannel()` |
+| 设备漏斗下钻 | `StatsService.funnelByDevice()` |
 | 商品类别 TopN | `StatsService.topCategories()` |
 | Redis 缓存 | `CacheService` |
 | 异步预热 | `CacheWarmupService` |
@@ -92,9 +96,9 @@ JMH 测试基于 10 万条内存日志，对比循环、顺序 Stream 和 parall
 
 ## 7. 测试与质量
 
-- 单元测试：25 个。
+- 单元测试：26 个。
 - Mockito：用于隔离 `UserLogDao`、`CacheService`、`Jedis` 等依赖。
-- JaCoCo：`core` 模块行覆盖率 84.59%，超过 60% 要求。
+- JaCoCo：`core` 模块行覆盖率 86.81%，超过 60% 要求。
 - 资源管理：DAO 使用 try-with-resources，数据生成器使用事务和批处理。
 - 日志：关键流程通过 SLF4J + Logback 输出到控制台和文件。
 
@@ -118,6 +122,7 @@ JMH 测试基于 10 万条内存日志，对比循环、顺序 Stream 和 parall
 - 数据字典：`docs/data-dictionary.md`
 - JMH 报告：`docs/jmh-report.md`
 - 代码审查报告：`docs/code-review.md`
+- 端到端验收：`docs/e2e-verification.md`
 - 统计报表：`report/user-behavior-report.txt`
 - 运行脚本：`scripts/*.ps1`
 - README：`README.md`
