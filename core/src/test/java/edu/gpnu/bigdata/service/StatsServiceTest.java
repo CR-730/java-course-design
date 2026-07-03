@@ -34,6 +34,13 @@ class StatsServiceTest {
         assertEquals(100.0, funnel.orderToPayRate());
     }
 
+    @Test
+    void parallelEventTypeCountMatchesSequentialResult() {
+        StatsService service = new StatsService(sampleLogs());
+
+        assertEquals(service.countByEventType(), service.countByEventTypeParallel());
+    }
+
     private static List<UserLogRecord> sampleLogs() {
         LocalDateTime now = LocalDateTime.of(2026, 7, 2, 10, 0);
         return List.of(
@@ -47,4 +54,3 @@ class StatsServiceTest {
         );
     }
 }
-

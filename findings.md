@@ -34,3 +34,5 @@
 - Redis cache keys verified: `stats:eventType`, `stats:channel`, `stats:dailyPv`, `stats:dailyUv`, `stats:funnel`, `stats:topCategory`.
 - `/api/stats` returns JSON with `fromCache=true` after async warmup.
 - Verified API endpoints: `/api/health`, `/api/stats`, `/api/stats/event-type`, `/api/stats/channel`, `/api/stats/funnel`.
+- JMH result on 100,000 in-memory logs: loop 2.548 ms/op, sequential Stream 2.606 ms/op, parallelStream 5.527 ms/op.
+- For the current grouped-count workload, parallelStream is slower because parallel overhead is larger than the benefit of splitting a small four-key aggregation.

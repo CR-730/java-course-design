@@ -27,3 +27,8 @@
 - Verified `/api/stats` JSON output and Redis cache keys.
 - Stopped local Web API before publishing the current version.
 - Preparing first Git commit and private GitHub repository upload.
+- Added `parallelStream` event statistics.
+- Added custom `FunnelCollector` for funnel conversion statistics.
+- Added JMH benchmark comparing loop, sequential Stream, and parallelStream implementations.
+- Ran JMH and saved raw output to `docs/jmh-output.txt`.
+- Added Day 3 benchmark report at `docs/jmh-report.md`.

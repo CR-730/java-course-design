@@ -21,6 +21,13 @@ Create a minimal, teacher-compliant Java training project for topic D: user beha
 - Insert data with JDBC batch operations.
 - Keep generated data compatible with topic D events and channels.
 
+## Scope For Day 3 Core
+
+- Add `parallelStream` statistics with no shared mutable state.
+- Add a custom Collector for funnel conversion statistics.
+- Add JMH benchmark comparing loop, stream, and parallel stream implementations.
+- Generate `docs/jmh-report.md` from a real benchmark run.
+
 ## Phases
 
 | Phase | Status | Verification |
@@ -35,6 +42,8 @@ Create a minimal, teacher-compliant Java training project for topic D: user beha
 | 8. Add Day 2 Stream report | complete | report generated under report/ |
 | 9. Add Redis cache and async warmup | complete | Redis keys and TTL verified |
 | 10. Add Javalin stats API | complete | `/api/stats` and sub-endpoints verified |
+| 11. Add parallelStream and custom Collector | complete | `mvn -q -pl core test` passed |
+| 12. Add JMH benchmark report | complete | `docs/jmh-output.txt` and `docs/jmh-report.md` generated from real JMH run |
 
 ## Decisions
 
@@ -52,3 +61,4 @@ Create a minimal, teacher-compliant Java training project for topic D: user beha
 | PowerShell split `-Dexec.mainClass=...` as Maven lifecycle phase | First exec run | Quote Maven property: `"-Dexec.mainClass=..."` |
 | Javalin JSON returned 500 due missing mapper | First `/api/stats` request | Added `jackson-databind` to `web/pom.xml` |
 | `mvn -pl web -am exec:java` executed on parent first | First Web startup attempt | Run `mvn install -DskipTests`, then `mvn -pl web exec:java` |
+| JMH jar missed `META-INF/BenchmarkList` | First benchmark jar run | Added explicit JMH annotation processor configuration in `benchmark/pom.xml` |

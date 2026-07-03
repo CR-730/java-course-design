@@ -1,5 +1,6 @@
 package edu.gpnu.bigdata.service;
 
+import edu.gpnu.bigdata.collector.FunnelCollector;
 import edu.gpnu.bigdata.dto.FunnelStats;
 import edu.gpnu.bigdata.entity.UserLogRecord;
 
@@ -8,7 +9,6 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -25,6 +25,22 @@ public class StatsService {
                         UserLogRecord::eventType,
                         LinkedHashMap::new,
                         Collectors.counting()
+                ));
+    }
+
+    public Map<String, Long> countByEventTypeParallel() {
+        return logs.parallelStream()
+                .collect(Collectors.groupingByConcurrent(
+                        UserLogRecord::eventType,
+                        Collectors.counting()
+                ))
+                .entrySet()
+                .stream()
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (left, right) -> left,
+                        LinkedHashMap::new
                 ));
     }
 
@@ -59,24 +75,7 @@ public class StatsService {
     }
 
     public FunnelStats funnelConversion() {
-        Map<String, Set<Long>> usersByEvent = logs.stream()
-                .collect(Collectors.groupingBy(
-                        UserLogRecord::eventType,
-                        Collectors.mapping(UserLogRecord::userId, Collectors.toSet())
-                ));
-        long view = sizeOf(usersByEvent, "view");
-        long cart = sizeOf(usersByEvent, "cart");
-        long order = sizeOf(usersByEvent, "order");
-        long pay = sizeOf(usersByEvent, "pay");
-        return new FunnelStats(
-                view,
-                cart,
-                order,
-                pay,
-                rate(cart, view),
-                rate(order, cart),
-                rate(pay, order)
-        );
+        return logs.stream().collect(new FunnelCollector());
     }
 
     public Map<String, Long> topCategories(int limit) {
@@ -95,14 +94,4 @@ public class StatsService {
                 ));
     }
 
-    private static long sizeOf(Map<String, Set<Long>> usersByEvent, String eventType) {
-        return usersByEvent.getOrDefault(eventType, Set.of()).size();
-    }
-
-    private static double rate(long numerator, long denominator) {
-        if (denominator == 0) {
-            return 0.0;
-        }
-        return Math.round(numerator * 10_000.0 / denominator) / 100.0;
-    }
 }
