@@ -9,9 +9,13 @@ import java.util.stream.Collectors;
 public record StatsSnapshot(
         Map<String, Long> eventTypeStats,
         Map<String, Long> channelStats,
+        Map<String, Long> deviceStats,
         Map<String, Long> dailyPv,
         Map<String, Long> dailyUv,
+        Map<String, Map<String, Long>> dailyEventTypeStats,
         FunnelStats funnelStats,
+        Map<String, FunnelStats> channelFunnelStats,
+        Map<String, FunnelStats> deviceFunnelStats,
         Map<String, Long> topCategoryStats,
         boolean fromCache
 ) {
@@ -19,6 +23,7 @@ public record StatsSnapshot(
         return new StatsSnapshot(
                 statsService.countByEventType(),
                 statsService.countByChannel(),
+                statsService.countByDevice(),
                 statsService.dailyPv().entrySet().stream()
                         .collect(Collectors.toMap(
                                 entry -> entry.getKey().toString(),
@@ -33,7 +38,16 @@ public record StatsSnapshot(
                                 (left, right) -> left,
                                 TreeMap::new
                         )),
+                statsService.dailyEventTypeStats().entrySet().stream()
+                        .collect(Collectors.toMap(
+                                entry -> entry.getKey().toString(),
+                                Map.Entry::getValue,
+                                (left, right) -> left,
+                                TreeMap::new
+                        )),
                 statsService.funnelConversion(),
+                statsService.funnelByChannel(),
+                statsService.funnelByDevice(),
                 statsService.topCategories(5),
                 fromCache
         );
@@ -43,12 +57,15 @@ public record StatsSnapshot(
         return new StatsSnapshot(
                 eventTypeStats,
                 channelStats,
+                deviceStats,
                 dailyPv,
                 dailyUv,
+                dailyEventTypeStats,
                 funnelStats,
+                channelFunnelStats,
+                deviceFunnelStats,
                 topCategoryStats,
                 value
         );
     }
 }
-

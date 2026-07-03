@@ -51,7 +51,18 @@ class StatsServiceTest {
         assertEquals(7, service.dailyPv().get(day));
         assertEquals(3, service.dailyUv().get(day));
         assertEquals(Map.of("android", 4L, "windows", 2L, "ios", 1L), service.countByDevice());
+        assertEquals(Map.of("view", 3L, "cart", 2L, "order", 1L, "pay", 1L), service.dailyEventTypeStats().get(day));
         assertEquals(Map.of("book", 6L, "food", 1L), service.topCategories(2));
+    }
+
+    @Test
+    void calculatesFunnelDrilldownByChannelAndDevice() {
+        StatsService service = new StatsService(sampleLogs());
+
+        assertEquals(2, service.funnelByChannel().get("app").viewUsers());
+        assertEquals(1, service.funnelByChannel().get("web").cartUsers());
+        assertEquals(1, service.funnelByDevice().get("android").payUsers());
+        assertEquals(0, service.funnelByDevice().get("ios").cartUsers());
     }
 
     @Test

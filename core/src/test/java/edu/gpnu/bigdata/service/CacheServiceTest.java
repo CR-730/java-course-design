@@ -24,11 +24,15 @@ class CacheServiceTest {
         when(jedis.exists(
                 CacheService.EVENT_TYPE_KEY,
                 CacheService.CHANNEL_KEY,
+                CacheService.DEVICE_KEY,
                 CacheService.DAILY_PV_KEY,
                 CacheService.DAILY_UV_KEY,
+                CacheService.DAILY_EVENT_TYPE_KEY,
                 CacheService.FUNNEL_KEY,
+                CacheService.CHANNEL_FUNNEL_KEY,
+                CacheService.DEVICE_FUNNEL_KEY,
                 CacheService.TOP_CATEGORY_KEY
-        )).thenReturn(5L);
+        )).thenReturn(9L);
         CacheService service = new CacheService(jedis);
 
         Optional<StatsSnapshot> snapshot = service.readStats();
@@ -42,15 +46,21 @@ class CacheServiceTest {
         when(jedis.exists(
                 CacheService.EVENT_TYPE_KEY,
                 CacheService.CHANNEL_KEY,
+                CacheService.DEVICE_KEY,
                 CacheService.DAILY_PV_KEY,
                 CacheService.DAILY_UV_KEY,
+                CacheService.DAILY_EVENT_TYPE_KEY,
                 CacheService.FUNNEL_KEY,
+                CacheService.CHANNEL_FUNNEL_KEY,
+                CacheService.DEVICE_FUNNEL_KEY,
                 CacheService.TOP_CATEGORY_KEY
-        )).thenReturn(6L);
+        )).thenReturn(10L);
         when(jedis.hgetAll(CacheService.EVENT_TYPE_KEY)).thenReturn(Map.of("view", "2", "pay", "1"));
         when(jedis.hgetAll(CacheService.CHANNEL_KEY)).thenReturn(Map.of("app", "3"));
+        when(jedis.hgetAll(CacheService.DEVICE_KEY)).thenReturn(Map.of("android", "2", "ios", "1"));
         when(jedis.hgetAll(CacheService.DAILY_PV_KEY)).thenReturn(Map.of("2026-07-03", "3"));
         when(jedis.hgetAll(CacheService.DAILY_UV_KEY)).thenReturn(Map.of("2026-07-03", "2"));
+        when(jedis.hgetAll(CacheService.DAILY_EVENT_TYPE_KEY)).thenReturn(Map.of("2026-07-03", "view=2,pay=1"));
         when(jedis.hgetAll(CacheService.FUNNEL_KEY)).thenReturn(Map.of(
                 "viewUsers", "2",
                 "cartUsers", "1",
@@ -60,6 +70,8 @@ class CacheServiceTest {
                 "cartToOrderRate", "100.0",
                 "orderToPayRate", "100.0"
         ));
+        when(jedis.hgetAll(CacheService.CHANNEL_FUNNEL_KEY)).thenReturn(Map.of("app", "2,1,1,1,50.0,100.0,100.0"));
+        when(jedis.hgetAll(CacheService.DEVICE_FUNNEL_KEY)).thenReturn(Map.of("android", "1,1,1,1,100.0,100.0,100.0"));
         when(jedis.hgetAll(CacheService.TOP_CATEGORY_KEY)).thenReturn(Map.of("book", "3"));
         CacheService service = new CacheService(jedis);
 
@@ -67,7 +79,11 @@ class CacheServiceTest {
 
         assertTrue(snapshot.fromCache());
         assertEquals(2, snapshot.eventTypeStats().get("view"));
+        assertEquals(2, snapshot.deviceStats().get("android"));
+        assertEquals(1, snapshot.dailyEventTypeStats().get("2026-07-03").get("pay"));
         assertEquals(50.0, snapshot.funnelStats().viewToCartRate());
+        assertEquals(1, snapshot.channelFunnelStats().get("app").payUsers());
+        assertEquals(100.0, snapshot.deviceFunnelStats().get("android").orderToPayRate());
     }
 
     @Test
@@ -80,9 +96,15 @@ class CacheServiceTest {
         verify(jedis).del(CacheService.EVENT_TYPE_KEY);
         verify(jedis).hset(org.mockito.ArgumentMatchers.eq(CacheService.EVENT_TYPE_KEY), anyMap());
         verify(jedis).expire(CacheService.EVENT_TYPE_KEY, 1800);
+        verify(jedis).del(CacheService.DEVICE_KEY);
+        verify(jedis).hset(org.mockito.ArgumentMatchers.eq(CacheService.DEVICE_KEY), anyMap());
+        verify(jedis).expire(CacheService.DEVICE_KEY, 1800);
         verify(jedis).del(CacheService.FUNNEL_KEY);
         verify(jedis).hset(org.mockito.ArgumentMatchers.eq(CacheService.FUNNEL_KEY), anyMap());
         verify(jedis).expire(CacheService.FUNNEL_KEY, 1800);
+        verify(jedis).del(CacheService.CHANNEL_FUNNEL_KEY);
+        verify(jedis).hset(org.mockito.ArgumentMatchers.eq(CacheService.CHANNEL_FUNNEL_KEY), anyMap());
+        verify(jedis).expire(CacheService.CHANNEL_FUNNEL_KEY, 1800);
     }
 
     private static List<UserLogRecord> sampleLogs() {

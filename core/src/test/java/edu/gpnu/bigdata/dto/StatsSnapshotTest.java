@@ -22,6 +22,10 @@ class StatsSnapshotTest {
 
         assertEquals(1, snapshot.eventTypeStats().get("view"));
         assertEquals(2, snapshot.channelStats().get("app"));
+        assertEquals(2, snapshot.deviceStats().get("ios"));
+        assertEquals(1, snapshot.dailyEventTypeStats().values().iterator().next().get("view"));
+        assertEquals(1, snapshot.channelFunnelStats().get("app").cartUsers());
+        assertEquals(1, snapshot.deviceFunnelStats().get("ios").cartUsers());
         assertEquals(2, snapshot.topCategoryStats().get("book"));
         assertFalse(snapshot.fromCache());
     }

@@ -83,8 +83,29 @@ public class StatsService {
                 ));
     }
 
+    public Map<LocalDate, Map<String, Long>> dailyEventTypeStats() {
+        return logs.stream()
+                .collect(Collectors.groupingBy(
+                        log -> log.eventTime().toLocalDate(),
+                        LinkedHashMap::new,
+                        Collectors.groupingBy(
+                                UserLogRecord::eventType,
+                                LinkedHashMap::new,
+                                Collectors.counting()
+                        )
+                ));
+    }
+
     public FunnelStats funnelConversion() {
         return logs.stream().collect(new FunnelCollector());
+    }
+
+    public Map<String, FunnelStats> funnelByChannel() {
+        return funnelBy(UserLogRecord::channel);
+    }
+
+    public Map<String, FunnelStats> funnelByDevice() {
+        return funnelBy(UserLogRecord::device);
     }
 
     public Map<String, Long> topCategories(int limit) {
@@ -100,6 +121,16 @@ public class StatsService {
                         Map.Entry::getValue,
                         (left, right) -> left,
                         LinkedHashMap::new
+                ));
+    }
+
+    private Map<String, FunnelStats> funnelBy(Function<UserLogRecord, String> classifier) {
+        return logs.stream()
+                .collect(Collectors.groupingBy(
+                        classifier,
+                        LinkedHashMap::new,
+                        Collectors.collectingAndThen(Collectors.toList(), grouped -> grouped.stream()
+                                .collect(new FunnelCollector()))
                 ));
     }
 
