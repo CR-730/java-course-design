@@ -32,3 +32,10 @@
 - Added JMH benchmark comparing loop, sequential Stream, and parallelStream implementations.
 - Ran JMH and saved raw output to `docs/jmh-output.txt`.
 - Added Day 3 benchmark report at `docs/jmh-report.md`.
+- Added Mockito dependency and DAO-injection constructor for `StatsApplicationService`.
+- Added Mockito tests for cache hit/miss/error paths, Redis cache read/write, and async warmup.
+- Configured JaCoCo 0.8.14 for the core module with a 60% line coverage gate.
+- Verified core JaCoCo line coverage at 61.76%.
+- Added PowerShell run scripts under `scripts/`.
+- Added Day 4 code review report at `docs/code-review.md`.
+- Rewrote README with complete Chinese run instructions.

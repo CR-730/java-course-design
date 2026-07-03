@@ -12,9 +12,13 @@ public class StatsApplicationService {
     private final UserLogDao userLogDao;
 
     public StatsApplicationService(Connection connection, CacheService cacheService) {
+        this(connection, cacheService, new UserLogDao());
+    }
+
+    public StatsApplicationService(Connection connection, CacheService cacheService, UserLogDao userLogDao) {
         this.connection = connection;
         this.cacheService = cacheService;
-        this.userLogDao = new UserLogDao();
+        this.userLogDao = userLogDao;
     }
 
     public StatsSnapshot stats() throws SQLException {
@@ -36,4 +40,3 @@ public class StatsApplicationService {
         }
     }
 }
-

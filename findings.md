@@ -36,3 +36,6 @@
 - Verified API endpoints: `/api/health`, `/api/stats`, `/api/stats/event-type`, `/api/stats/channel`, `/api/stats/funnel`.
 - JMH result on 100,000 in-memory logs: loop 2.548 ms/op, sequential Stream 2.606 ms/op, parallelStream 5.527 ms/op.
 - For the current grouped-count workload, parallelStream is slower because parallel overhead is larger than the benefit of splitting a small four-key aggregation.
+- Mockito tests now cover DAO/cache isolation requirements: cached read avoids DAO, cache miss queries DAO and writes Redis cache, DAO failure is wrapped.
+- JaCoCo core line coverage verified at 61.76% with `mvn -pl core clean verify`.
+- JaCoCo execution data is written to `%USERPROFILE%\java-course-design-core-jacoco.exec` because the project workspace path contains Chinese characters that break the javaagent destfile path.
