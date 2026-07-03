@@ -26,7 +26,12 @@ class ReportGeneratorTest {
         assertTrue(report.contains("pay: 1"));
         assertTrue(report.contains("app: 4"));
         assertTrue(report.contains("web: 1"));
+        assertTrue(report.contains("android: 5"));
+        assertTrue(report.contains("2026-07-03 PV: 5, UV: 2"));
+        assertTrue(report.contains("2026-07-03:"));
         assertTrue(report.contains("view -> cart: 50.0%"));
+        assertTrue(report.contains("app view=1, cart=1, order=1, pay=1"));
+        assertTrue(report.contains("android view=2, cart=1, order=1, pay=1"));
         assertTrue(report.contains("book: 4"));
     }
 

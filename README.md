@@ -92,7 +92,7 @@ SELECT channel, COUNT(*) FROM user_log GROUP BY channel;
 report/user-behavior-report.txt
 ```
 
-统计内容包括事件类型、渠道、每日 PV/UV、漏斗转化率、商品类别 TopN。
+统计内容包括事件类型、渠道、设备、每日 PV/UV、每日事件分布、总体漏斗转化率、渠道漏斗下钻、设备漏斗下钻和商品类别 TopN。
 
 ## 运行测试
 
@@ -153,9 +153,13 @@ http://localhost:8080/api/health
 http://localhost:8080/api/stats
 http://localhost:8080/api/stats/event-type
 http://localhost:8080/api/stats/channel
+http://localhost:8080/api/stats/device
 http://localhost:8080/api/stats/daily-pv
 http://localhost:8080/api/stats/daily-uv
+http://localhost:8080/api/stats/daily-event-type
 http://localhost:8080/api/stats/funnel
+http://localhost:8080/api/stats/drilldown/channel-funnel
+http://localhost:8080/api/stats/drilldown/device-funnel
 http://localhost:8080/api/stats/top-category
 ```
 
