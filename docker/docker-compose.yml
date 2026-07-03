@@ -1,0 +1,27 @@
+name: java-course-design
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: java-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: course_design
+      MYSQL_USER: app_user
+      MYSQL_PASSWORD: app_pass
+    ports:
+      - "3308:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ../sql/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+
+  redis:
+    image: redis:7
+    container_name: java-redis
+    ports:
+      - "6379:6379"
+
+volumes:
+  mysql_data:
+    name: java_course_design_mysql_data

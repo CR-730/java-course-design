@@ -1,0 +1,29 @@
+用户行为漏斗分析报表
+====================
+
+一、按事件类型统计
+view: 55000
+cart: 25000
+order: 13000
+pay: 7000
+
+二、按渠道统计
+web: 33334
+miniprogram: 33333
+app: 33333
+
+三、漏斗转化率
+view 用户数: 27500
+cart 用户数: 12500
+order 用户数: 6500
+pay 用户数: 3500
+view -> cart: 45.45%
+cart -> order: 52.0%
+order -> pay: 53.85%
+
+四、商品类别 Top 5
+clothing: 18824
+food: 18824
+digital: 18824
+book: 18823
+sports: 18823
