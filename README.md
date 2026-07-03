@@ -124,7 +124,7 @@ mvn -pl core clean verify
 core/target/site/jacoco/index.html
 ```
 
-当前 core 模块 JaCoCo 行覆盖率为 61.76%，满足 60% 要求。
+当前 core 模块 JaCoCo 行覆盖率为 84.59%，满足 60% 要求。
 
 ## 运行 JMH
 
@@ -153,7 +153,10 @@ http://localhost:8080/api/health
 http://localhost:8080/api/stats
 http://localhost:8080/api/stats/event-type
 http://localhost:8080/api/stats/channel
+http://localhost:8080/api/stats/daily-pv
+http://localhost:8080/api/stats/daily-uv
 http://localhost:8080/api/stats/funnel
+http://localhost:8080/api/stats/top-category
 ```
 
 `/api/stats` 会返回 JSON 统计结果，并通过 Redis 缓存统计快照。启动时会使用 `CompletableFuture` 异步预热缓存。

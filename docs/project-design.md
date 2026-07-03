@@ -67,6 +67,7 @@
 | --- | --- |
 | 按事件类型统计 | `StatsService.countByEventType()` |
 | 按渠道统计 | `StatsService.countByChannel()` |
+| 按设备统计 | `StatsService.countByDevice()` |
 | 每日 PV | `StatsService.dailyPv()` |
 | 每日 UV | `StatsService.dailyUv()` |
 | 漏斗转化率 | `FunnelCollector`、`StatsService.funnelConversion()` |
@@ -91,9 +92,9 @@ JMH 测试基于 10 万条内存日志，对比循环、顺序 Stream 和 parall
 
 ## 7. 测试与质量
 
-- 单元测试：18 个。
+- 单元测试：25 个。
 - Mockito：用于隔离 `UserLogDao`、`CacheService`、`Jedis` 等依赖。
-- JaCoCo：`core` 模块行覆盖率 61.76%，超过 60% 要求。
+- JaCoCo：`core` 模块行覆盖率 84.59%，超过 60% 要求。
 - 资源管理：DAO 使用 try-with-resources，数据生成器使用事务和批处理。
 - 日志：关键流程通过 SLF4J + Logback 输出到控制台和文件。
 

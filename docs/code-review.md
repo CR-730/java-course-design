@@ -20,7 +20,7 @@
 | parallelStream 与自定义 Collector | 通过 | `StatsService.countByEventTypeParallel()`、`FunnelCollector` |
 | CompletableFuture | 通过 | `CacheWarmupService` |
 | Javalin API | 通过 | `web/src/main/java/edu/gpnu/bigdata/web/ApiServer.java` |
-| JUnit5、Mockito、JaCoCo | 通过 | 18 个单元测试，Mockito 隔离 DAO/Redis，JaCoCo 行覆盖率 61.76% |
+| JUnit5、Mockito、JaCoCo | 通过 | 25 个单元测试，Mockito 隔离 DAO/Redis，JaCoCo 行覆盖率 84.59% |
 | JMH | 通过 | `StreamBenchmark`、`docs/jmh-report.md` |
 | README 与运行脚本 | 通过 | `README.md`、`scripts/*.ps1` |
 
