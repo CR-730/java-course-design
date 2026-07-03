@@ -29,14 +29,22 @@ public final class DataGenerator {
     }
 
     public static void generate(Connection connection) throws SQLException {
-        SyntheticDataFactory factory = new SyntheticDataFactory(USER_COUNT);
+        generate(connection, new SyntheticDataFactory(USER_COUNT), USER_COUNT, LOG_COUNT);
+    }
+
+    static void generate(
+            Connection connection,
+            SyntheticDataFactory factory,
+            int userCount,
+            int logCount
+    ) throws SQLException {
         connection.setAutoCommit(false);
         try {
             clearTables(connection);
-            insertUsers(connection, factory);
-            insertLogs(connection, factory);
+            insertUsers(connection, factory, userCount);
+            insertLogs(connection, factory, logCount);
             connection.commit();
-            LOGGER.info("Generated {} users and {} behavior logs", USER_COUNT, LOG_COUNT);
+            LOGGER.info("Generated {} users and {} behavior logs", userCount, logCount);
         } catch (SQLException e) {
             connection.rollback();
             throw e;
@@ -53,13 +61,17 @@ public final class DataGenerator {
         }
     }
 
-    private static void insertUsers(Connection connection, SyntheticDataFactory factory) throws SQLException {
+    private static void insertUsers(
+            Connection connection,
+            SyntheticDataFactory factory,
+            int userCount
+    ) throws SQLException {
         String sql = """
                 INSERT INTO user (id, username, gender, age, register_channel)
                 VALUES (?, ?, ?, ?, ?)
                 """;
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            for (int i = 1; i <= USER_COUNT; i++) {
+            for (int i = 1; i <= userCount; i++) {
                 UserRecord user = factory.userAt(i);
                 statement.setLong(1, user.id());
                 statement.setString(2, user.username());
@@ -73,13 +85,17 @@ public final class DataGenerator {
         }
     }
 
-    private static void insertLogs(Connection connection, SyntheticDataFactory factory) throws SQLException {
+    private static void insertLogs(
+            Connection connection,
+            SyntheticDataFactory factory,
+            int logCount
+    ) throws SQLException {
         String sql = """
                 INSERT INTO user_log (user_id, event_type, event_time, channel, device, product_category)
                 VALUES (?, ?, ?, ?, ?, ?)
                 """;
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            for (int i = 1; i <= LOG_COUNT; i++) {
+            for (int i = 1; i <= logCount; i++) {
                 UserLogRecord log = factory.logAt(i);
                 statement.setLong(1, log.userId());
                 statement.setString(2, log.eventType());
@@ -101,4 +117,3 @@ public final class DataGenerator {
         }
     }
 }
-
