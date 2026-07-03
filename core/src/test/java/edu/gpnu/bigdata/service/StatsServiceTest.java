@@ -4,7 +4,9 @@ import edu.gpnu.bigdata.entity.UserLogRecord;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -39,6 +41,27 @@ class StatsServiceTest {
         StatsService service = new StatsService(sampleLogs());
 
         assertEquals(service.countByEventType(), service.countByEventTypeParallel());
+    }
+
+    @Test
+    void calculatesDailyPvUvAndTopCategories() {
+        StatsService service = new StatsService(sampleLogs());
+
+        LocalDate day = LocalDate.of(2026, 7, 2);
+        assertEquals(7, service.dailyPv().get(day));
+        assertEquals(3, service.dailyUv().get(day));
+        assertEquals(Map.of("android", 4L, "windows", 2L, "ios", 1L), service.countByDevice());
+        assertEquals(Map.of("book", 6L, "food", 1L), service.topCategories(2));
+    }
+
+    @Test
+    void handlesEmptyLogsWithoutDivisionByZero() {
+        StatsService service = new StatsService(List.of());
+
+        assertEquals(Map.of(), service.countByEventType());
+        assertEquals(Map.of(), service.countByEventTypeParallel());
+        assertEquals(0, service.funnelConversion().viewUsers());
+        assertEquals(0.0, service.funnelConversion().viewToCartRate());
     }
 
     private static List<UserLogRecord> sampleLogs() {

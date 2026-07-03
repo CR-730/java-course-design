@@ -30,7 +30,10 @@ public final class ApiServer {
         app.get("/api/stats", ctx -> ctx.json(statsService.stats()));
         app.get("/api/stats/event-type", ctx -> ctx.json(statsService.stats().eventTypeStats()));
         app.get("/api/stats/channel", ctx -> ctx.json(statsService.stats().channelStats()));
+        app.get("/api/stats/daily-pv", ctx -> ctx.json(statsService.stats().dailyPv()));
+        app.get("/api/stats/daily-uv", ctx -> ctx.json(statsService.stats().dailyUv()));
         app.get("/api/stats/funnel", ctx -> ctx.json(statsService.stats().funnelStats()));
+        app.get("/api/stats/top-category", ctx -> ctx.json(statsService.stats().topCategoryStats()));
         app.events(event -> event.serverStopped(() -> {
             jedis.close();
             dataSource.close();

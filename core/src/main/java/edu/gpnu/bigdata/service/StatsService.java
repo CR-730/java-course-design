@@ -53,6 +53,15 @@ public class StatsService {
                 ));
     }
 
+    public Map<String, Long> countByDevice() {
+        return logs.stream()
+                .collect(Collectors.groupingBy(
+                        UserLogRecord::device,
+                        LinkedHashMap::new,
+                        Collectors.counting()
+                ));
+    }
+
     public Map<LocalDate, Long> dailyPv() {
         return logs.stream()
                 .collect(Collectors.groupingBy(
