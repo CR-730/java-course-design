@@ -39,3 +39,6 @@
 - Mockito tests now cover DAO/cache isolation requirements: cached read avoids DAO, cache miss queries DAO and writes Redis cache, DAO failure is wrapped.
 - JaCoCo core line coverage verified at 61.76% with `mvn -pl core clean verify`.
 - JaCoCo execution data is written to `%USERPROFILE%\java-course-design-core-jacoco.exec` because the project workspace path contains Chinese characters that break the javaagent destfile path.
+- Final database verification: `user` has 50,000 rows and `user_log` has 100,000 rows.
+- Final API verification returned event stats `view=55000`, `cart=25000`, `order=13000`, `pay=7000` and `fromCache=true`.
+- Final Redis verification showed `stats:*` keys and positive TTL for `stats:eventType`.

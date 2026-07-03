@@ -39,3 +39,11 @@
 - Added PowerShell run scripts under `scripts/`.
 - Added Day 4 code review report at `docs/code-review.md`.
 - Rewrote README with complete Chinese run instructions.
+- Added final design document at `docs/project-design.md`.
+- Added ER diagram explanation at `docs/er-diagram.md`.
+- Final compile verified with `mvn clean compile`.
+- Final test verified with `mvn clean test`: 18 tests passed.
+- Final JaCoCo verified with `scripts/run-jacoco.ps1`: coverage gate passed.
+- Final Docker verification: MySQL user count 50,000, log count 100,000; Redis PONG.
+- Final API verification: `/api/health` returned OK, `/api/stats` returned `fromCache=true`.
+- Final JMH script verification completed successfully.

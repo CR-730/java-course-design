@@ -54,6 +54,8 @@ Create a minimal, teacher-compliant Java training project for topic D: user beha
 | 12. Add JMH benchmark report | complete | `docs/jmh-output.txt` and `docs/jmh-report.md` generated from real JMH run |
 | 13. Add Mockito tests and JaCoCo gate | complete | `mvn -pl core clean verify` passed, line coverage 61.76% |
 | 14. Add Day 4 docs and run scripts | complete | `docs/code-review.md`, `scripts/*.ps1`, README updated |
+| 15. Add final design document | complete | `docs/project-design.md` and `docs/er-diagram.md` added |
+| 16. Final verification | complete | compile, test, JaCoCo, Docker DB, Redis, API, JMH verified |
 
 ## Decisions
 
@@ -76,3 +78,5 @@ Create a minimal, teacher-compliant Java training project for topic D: user beha
 | JaCoCo 0.8.12 could not instrument JDK 25 class file version 69 | First JaCoCo verify run | Upgraded JaCoCo Maven plugin to 0.8.14 |
 | JaCoCo exec path broke under Chinese workspace path | JaCoCo report skipped execution data | Wrote exec data to ASCII user-home path and pointed report/check to it |
 | PowerShell split Maven `-Doutput=...xml` | First effective-pom command | Quoted the Maven property |
+| Parallel final verification commands both cleaned `core/target` | Ran `mvn clean test` and JaCoCo script at the same time | Reran verification sequentially |
+| PowerShell refused same stdout/stderr redirect file for API background process | First API start attempt | Used separate stdout and stderr log files |
