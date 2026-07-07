@@ -26,6 +26,12 @@ public final class ApiServer {
         }
 
         Javalin app = Javalin.create();
+        app.before(ctx -> {
+            ctx.header("Access-Control-Allow-Origin", "*");
+            ctx.header("Access-Control-Allow-Methods", "GET, OPTIONS");
+            ctx.header("Access-Control-Allow-Headers", "Content-Type");
+        });
+        app.options("/*", ctx -> ctx.status(204));
         app.get("/api/health", ctx -> ctx.result("OK"));
         app.get("/api/stats", ctx -> ctx.json(statsService.stats()));
         app.get("/api/stats/event-type", ctx -> ctx.json(statsService.stats().eventTypeStats()));

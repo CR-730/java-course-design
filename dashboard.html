@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户行为漏斗分析仪表板</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            color-scheme: light;
+            --bg: oklch(97% 0.012 250);
+            --surface: oklch(100% 0 0);
+            --surface-soft: oklch(94.5% 0.018 248);
+            --border: oklch(86% 0.018 248);
+            --text: oklch(23% 0.022 258);
+            --muted: oklch(48% 0.025 255);
+            --subtle: oklch(60% 0.018 252);
+            --blue: oklch(53% 0.145 252);
+            --blue-soft: oklch(93% 0.036 252);
+            --green: oklch(58% 0.112 164);
+            --green-soft: oklch(93% 0.038 164);
+            --amber: oklch(72% 0.12 78);
+            --red: oklch(58% 0.15 28);
+            --shadow: 0 18px 44px oklch(28% 0.03 252 / 10%);
+            --radius: 8px;
+            --space-1: 0.25rem;
+            --space-2: 0.5rem;
+            --space-3: 0.75rem;
+            --space-4: 1rem;
+            --space-5: 1.25rem;
+            --space-6: 1.5rem;
+            --space-8: 2rem;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background:
+                linear-gradient(180deg, oklch(98% 0.012 250), var(--bg) 44%),
+                var(--bg);
+            color: var(--text);
+            font-family: Inter, "Segoe UI", "Microsoft YaHei", Arial, sans-serif;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        button {
+            font: inherit;
+        }
+
+        .app-shell {
+            width: min(1180px, calc(100% - 32px));
+            margin: 0 auto;
+            padding: var(--space-6) 0 var(--space-8);
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: var(--space-4);
+            padding: var(--space-4) 0 var(--space-5);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            min-width: 0;
+        }
+
+        .brand-mark {
+            display: grid;
+            width: 44px;
+            height: 44px;
+            place-items: center;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--surface);
+            box-shadow: var(--shadow);
+            color: var(--blue);
+            font-weight: 800;
+        }
+
+        h1,
+        h2,
+        h3,
+        p {
+            margin: 0;
+        }
+
+        h1 {
+            font-size: 1.45rem;
+            font-weight: 760;
+            letter-spacing: 0;
+        }
+
+        .subtitle {
+            margin-top: var(--space-1);
+            color: var(--muted);
+            font-size: 0.92rem;
+        }
+
+        .actions {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .status-pill,
+        .refresh-button {
+            min-height: 44px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--surface);
+            color: var(--text);
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-2);
+            padding: 0 var(--space-4);
+            color: var(--muted);
+            white-space: nowrap;
+        }
+
+        .status-dot {
+            width: 0.625rem;
+            height: 0.625rem;
+            border-radius: 999px;
+            background: var(--subtle);
+        }
+
+        .status-pill[data-state="cache"] .status-dot {
+            background: var(--green);
+        }
+
+        .status-pill[data-state="live"] .status-dot {
+            background: var(--amber);
+        }
+
+        .status-pill[data-state="error"] .status-dot {
+            background: var(--red);
+        }
+
+        .refresh-button {
+            cursor: pointer;
+            padding: 0 var(--space-4);
+            font-weight: 650;
+            transition: transform 150ms ease, border-color 150ms ease, background 150ms ease;
+        }
+
+        .refresh-button:hover {
+            border-color: oklch(72% 0.05 252);
+            background: var(--surface-soft);
+        }
+
+        .refresh-button:active {
+            transform: translateY(1px);
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1.25fr 0.75fr;
+            gap: var(--space-4);
+        }
+
+        .panel {
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--surface);
+            box-shadow: var(--shadow);
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: start;
+            justify-content: space-between;
+            gap: var(--space-4);
+            padding: var(--space-5) var(--space-5) 0;
+        }
+
+        .panel-title {
+            font-size: 1rem;
+            font-weight: 720;
+            letter-spacing: 0;
+        }
+
+        .panel-note {
+            margin-top: var(--space-1);
+            color: var(--muted);
+            font-size: 0.88rem;
+        }
+
+        .panel-body {
+            padding: var(--space-5);
+        }
+
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: var(--space-4);
+            margin-bottom: var(--space-4);
+        }
+
+        .metric {
+            min-height: 112px;
+            padding: var(--space-4);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--surface);
+        }
+
+        .metric-label {
+            color: var(--muted);
+            font-size: 0.82rem;
+        }
+
+        .metric-value {
+            margin-top: var(--space-2);
+            font-size: 1.65rem;
+            font-weight: 780;
+            letter-spacing: 0;
+        }
+
+        .metric-hint {
+            margin-top: var(--space-2);
+            color: var(--subtle);
+            font-size: 0.8rem;
+        }
+
+        .chart-frame {
+            position: relative;
+            width: 100%;
+            height: 360px;
+        }
+
+        .chart-frame.small {
+            height: 260px;
+        }
+
+        .chart-message {
+            position: absolute;
+            inset: 0;
+            display: grid;
+            place-items: center;
+            padding: var(--space-6);
+            color: var(--muted);
+            text-align: center;
+            background: var(--surface);
+        }
+
+        .split-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-4);
+            margin-top: var(--space-4);
+        }
+
+        .funnel-list {
+            display: grid;
+            gap: var(--space-3);
+        }
+
+        .funnel-row {
+            display: grid;
+            grid-template-columns: 72px 1fr 84px;
+            align-items: center;
+            gap: var(--space-3);
+        }
+
+        .funnel-name {
+            color: var(--muted);
+            font-size: 0.86rem;
+        }
+
+        .funnel-track {
+            height: 0.65rem;
+            overflow: hidden;
+            border-radius: 999px;
+            background: var(--surface-soft);
+        }
+
+        .funnel-bar {
+            display: block;
+            height: 100%;
+            min-width: 4px;
+            border-radius: inherit;
+            background: var(--blue);
+        }
+
+        .bar-summary {
+            display: grid;
+            gap: var(--space-3);
+            margin-bottom: var(--space-4);
+        }
+
+        .bar-row {
+            display: grid;
+            grid-template-columns: 72px 1fr 88px;
+            align-items: center;
+            gap: var(--space-3);
+        }
+
+        .bar-name {
+            color: var(--muted);
+            font-size: 0.86rem;
+        }
+
+        .bar-track {
+            height: 0.72rem;
+            overflow: hidden;
+            border-radius: 999px;
+            background: var(--surface-soft);
+        }
+
+        .bar-fill {
+            display: block;
+            height: 100%;
+            min-width: 4px;
+            border-radius: inherit;
+            background: var(--blue);
+        }
+
+        .bar-value {
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+            font-size: 0.86rem;
+        }
+
+        .daily-summary {
+            display: grid;
+            gap: var(--space-3);
+            margin-bottom: var(--space-4);
+        }
+
+        .daily-row {
+            display: grid;
+            grid-template-columns: 96px 1fr 1fr;
+            align-items: center;
+            gap: var(--space-3);
+            font-size: 0.86rem;
+        }
+
+        .daily-date {
+            color: var(--muted);
+        }
+
+        .daily-chip {
+            display: flex;
+            justify-content: space-between;
+            gap: var(--space-2);
+            min-height: 32px;
+            padding: var(--space-1) var(--space-3);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--surface-soft);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .funnel-value {
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+            color: var(--text);
+            font-size: 0.86rem;
+        }
+
+        .dimension-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88rem;
+        }
+
+        .dimension-table th,
+        .dimension-table td {
+            padding: var(--space-3) 0;
+            border-bottom: 1px solid var(--border);
+            text-align: left;
+        }
+
+        .dimension-table th {
+            color: var(--muted);
+            font-weight: 650;
+        }
+
+        .dimension-table td:last-child,
+        .dimension-table th:last-child {
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .empty-state,
+        .error-state {
+            display: grid;
+            min-height: 260px;
+            place-items: center;
+            padding: var(--space-8);
+            border: 1px dashed var(--border);
+            border-radius: var(--radius);
+            color: var(--muted);
+            text-align: center;
+        }
+
+        .error-state {
+            color: var(--red);
+            background: oklch(97% 0.025 28);
+        }
+
+        .footer-note {
+            padding: var(--space-5) 0 0;
+            color: var(--muted);
+            font-size: 0.84rem;
+            text-align: right;
+        }
+
+        @media (max-width: 960px) {
+            .dashboard-grid,
+            .split-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .metric-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 640px) {
+            .app-shell {
+                width: min(100% - 24px, 1180px);
+                padding-top: var(--space-4);
+            }
+
+            .topbar {
+                align-items: stretch;
+                flex-direction: column;
+            }
+
+            .actions {
+                justify-content: stretch;
+            }
+
+            .status-pill,
+            .refresh-button {
+                flex: 1;
+                justify-content: center;
+            }
+
+            .metric-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .panel-header {
+                flex-direction: column;
+            }
+
+            .chart-frame {
+                height: 320px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="app-shell">
+        <header class="topbar">
+            <div class="brand">
+                <div class="brand-mark" aria-hidden="true">D</div>
+                <div>
+                    <h1>用户行为漏斗分析仪表板</h1>
+                    <p class="subtitle">Java 课程设计实训 · MySQL / Redis / Stream API</p>
+                </div>
+            </div>
+            <div class="actions">
+                <div class="status-pill" id="cacheStatus" data-state="loading">
+                    <span class="status-dot" aria-hidden="true"></span>
+                    <span id="cacheStatusText">正在加载数据</span>
+                </div>
+                <button class="refresh-button" id="refreshButton" type="button">刷新</button>
+            </div>
+        </header>
+
+        <section class="metric-grid" aria-label="核心指标">
+            <article class="metric">
+                <p class="metric-label">总 PV</p>
+                <p class="metric-value" id="pvValue">--</p>
+                <p class="metric-hint">全部行为日志数量</p>
+            </article>
+            <article class="metric">
+                <p class="metric-label">日均 UV</p>
+                <p class="metric-value" id="uvValue">--</p>
+                <p class="metric-hint">按日期去重用户均值</p>
+            </article>
+            <article class="metric">
+                <p class="metric-label">支付转化率</p>
+                <p class="metric-value" id="payRateValue">--</p>
+                <p class="metric-hint">浏览用户到支付用户</p>
+            </article>
+            <article class="metric">
+                <p class="metric-label">Top 类目</p>
+                <p class="metric-value" id="categoryValue">--</p>
+                <p class="metric-hint">行为次数最高的商品类目</p>
+            </article>
+        </section>
+
+        <section class="dashboard-grid">
+            <article class="panel">
+                <div class="panel-header">
+                    <div>
+                        <h2 class="panel-title">事件类型统计</h2>
+                        <p class="panel-note">对照老师模板中的柱状图要求，展示 view、cart、order、pay 事件数量。</p>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div class="bar-summary" id="eventSummary"></div>
+                    <div class="chart-frame">
+                        <canvas id="eventChart"></canvas>
+                        <div class="chart-message" id="eventChartMessage">正在加载事件统计</div>
+                    </div>
+                </div>
+            </article>
+
+            <article class="panel">
+                <div class="panel-header">
+                    <div>
+                        <h2 class="panel-title">整体漏斗</h2>
+                        <p class="panel-note">展示浏览、加购、下单、支付各阶段用户规模。</p>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div class="funnel-list" id="funnelList"></div>
+                </div>
+            </article>
+        </section>
+
+        <section class="split-grid">
+            <article class="panel">
+                <div class="panel-header">
+                    <div>
+                        <h2 class="panel-title">渠道分布</h2>
+                        <p class="panel-note">用于说明 app、web、小程序等渠道维度下钻。</p>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div class="bar-summary" id="channelSummary"></div>
+                    <div class="chart-frame small">
+                        <canvas id="channelChart"></canvas>
+                        <div class="chart-message" id="channelChartMessage">正在加载渠道统计</div>
+                    </div>
+                </div>
+            </article>
+
+            <article class="panel">
+                <div class="panel-header">
+                    <div>
+                        <h2 class="panel-title">每日 PV / UV</h2>
+                        <p class="panel-note">按日期展示访问量和独立访客趋势。</p>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div class="daily-summary" id="dailySummary"></div>
+                    <div class="chart-frame small">
+                        <canvas id="dailyChart"></canvas>
+                        <div class="chart-message" id="dailyChartMessage">正在加载每日趋势</div>
+                    </div>
+                </div>
+            </article>
+        </section>
+
+        <section class="split-grid">
+            <article class="panel">
+                <div class="panel-header">
+                    <div>
+                        <h2 class="panel-title">设备维度</h2>
+                        <p class="panel-note">展示设备类型统计，补充多维分析证据。</p>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <table class="dimension-table">
+                        <thead>
+                            <tr>
+                                <th>设备</th>
+                                <th>行为数</th>
+                            </tr>
+                        </thead>
+                        <tbody id="deviceTable"></tbody>
+                    </table>
+                </div>
+            </article>
+
+            <article class="panel">
+                <div class="panel-header">
+                    <div>
+                        <h2 class="panel-title">类目排行</h2>
+                        <p class="panel-note">展示 Top 商品类目，辅助解释业务偏好。</p>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <table class="dimension-table">
+                        <thead>
+                            <tr>
+                                <th>类目</th>
+                                <th>行为数</th>
+                            </tr>
+                        </thead>
+                        <tbody id="categoryTable"></tbody>
+                    </table>
+                </div>
+            </article>
+        </section>
+
+        <p class="footer-note" id="lastUpdated">等待首次加载</p>
+    </main>
+
+    <script>
+        const apiUrl = window.location.protocol === "file:"
+            ? "http://localhost:8080/api/stats"
+            : "/api/stats";
+
+        const chartPalette = [
+            "#2563eb",
+            "#0f9f75",
+            "#d97706",
+            "#dc2626",
+            "#7c3aed"
+        ];
+
+        const charts = {};
+
+        const labels = {
+            view: "浏览",
+            cart: "加购",
+            order: "下单",
+            pay: "支付",
+            app: "App",
+            web: "Web",
+            miniprogram: "小程序"
+        };
+
+        function formatNumber(value) {
+            return new Intl.NumberFormat("zh-CN").format(Number(value || 0));
+        }
+
+        function formatPercent(value) {
+            return `${(Number(value || 0) * 100).toFixed(2)}%`;
+        }
+
+        function normalizePayload(payload) {
+            return payload && payload.data ? payload.data : payload;
+        }
+
+        function sortedEntries(map) {
+            return Object.entries(map || {}).sort((left, right) => right[1] - left[1]);
+        }
+
+        function orderedEntries(map, order) {
+            const source = map || {};
+            return order.filter((key) => key in source).map((key) => [key, source[key]]);
+        }
+
+        function upsertChart(id, config) {
+            const canvas = document.getElementById(id);
+            setChartMessage(id, "");
+            if (charts[id]) {
+                charts[id].destroy();
+            }
+            charts[id] = new Chart(canvas, config);
+        }
+
+        function setChartMessage(chartId, message) {
+            const messageEl = document.getElementById(`${chartId}Message`);
+            if (!messageEl) {
+                return;
+            }
+            messageEl.textContent = message;
+            messageEl.hidden = !message;
+        }
+
+        function setStatus(stats) {
+            const status = document.getElementById("cacheStatus");
+            const text = document.getElementById("cacheStatusText");
+            if (stats.fromCache) {
+                status.dataset.state = "cache";
+                text.textContent = "数据来自 Redis 缓存";
+                return;
+            }
+            status.dataset.state = "live";
+            text.textContent = "数据来自实时计算";
+        }
+
+        function setError(message) {
+            const status = document.getElementById("cacheStatus");
+            const text = document.getElementById("cacheStatusText");
+            status.dataset.state = "error";
+            text.textContent = message;
+        }
+
+        function renderMetrics(stats) {
+            const totalPv = Object.values(stats.eventTypeStats || {}).reduce((sum, item) => sum + Number(item), 0);
+            const uvValues = Object.values(stats.dailyUv || {});
+            const avgUv = uvValues.length
+                ? Math.round(uvValues.reduce((sum, item) => sum + Number(item), 0) / uvValues.length)
+                : 0;
+            const funnel = stats.funnelStats || {};
+            const payRate = funnel.viewUsers ? Number(funnel.payUsers || 0) / Number(funnel.viewUsers) : 0;
+            const topCategory = sortedEntries(stats.topCategoryStats || {})[0];
+
+            document.getElementById("pvValue").textContent = formatNumber(totalPv);
+            document.getElementById("uvValue").textContent = formatNumber(avgUv);
+            document.getElementById("payRateValue").textContent = formatPercent(payRate);
+            document.getElementById("categoryValue").textContent = topCategory ? topCategory[0] : "--";
+        }
+
+        function renderEventChart(stats) {
+            const entries = orderedEntries(stats.eventTypeStats, ["view", "cart", "order", "pay"]);
+            upsertChart("eventChart", {
+                type: "bar",
+                data: {
+                    labels: entries.map(([key]) => labels[key] || key),
+                    datasets: [{
+                        label: "事件数量",
+                        data: entries.map(([, value]) => value),
+                        backgroundColor: chartPalette.slice(0, entries.length),
+                        borderRadius: 6,
+                        borderSkipped: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: (item) => `数量：${formatNumber(item.raw)}`
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { grid: { display: false } },
+                        y: {
+                            beginAtZero: true,
+                            ticks: { callback: (value) => formatNumber(value) }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderChannelChart(stats) {
+            const entries = orderedEntries(stats.channelStats, ["app", "web", "miniprogram"]);
+            upsertChart("channelChart", {
+                type: "doughnut",
+                data: {
+                    labels: entries.map(([key]) => labels[key] || key),
+                    datasets: [{
+                        data: entries.map(([, value]) => value),
+                        backgroundColor: chartPalette.slice(0, entries.length),
+                        borderColor: "oklch(100% 0 0)",
+                        borderWidth: 3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: "64%",
+                    plugins: {
+                        legend: { position: "bottom" },
+                        tooltip: {
+                            callbacks: {
+                                label: (item) => `${item.label}：${formatNumber(item.raw)}`
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderDailyChart(stats) {
+            const dates = Object.keys(stats.dailyPv || {}).sort();
+            upsertChart("dailyChart", {
+                type: "line",
+                data: {
+                    labels: dates,
+                    datasets: [
+                        {
+                            label: "PV",
+                            data: dates.map((date) => stats.dailyPv[date] || 0),
+                            borderColor: chartPalette[0],
+                            backgroundColor: "rgba(37, 99, 235, 0.12)",
+                            fill: true,
+                            tension: 0.32
+                        },
+                        {
+                            label: "UV",
+                            data: dates.map((date) => (stats.dailyUv || {})[date] || 0),
+                            borderColor: chartPalette[1],
+                            backgroundColor: "rgba(15, 159, 117, 0.1)",
+                            fill: true,
+                            tension: 0.32
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { intersect: false, mode: "index" },
+                    plugins: {
+                        legend: { position: "bottom" }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { maxTicksLimit: 6 }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            ticks: { callback: (value) => formatNumber(value) }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderFunnel(stats) {
+            const funnel = stats.funnelStats || {};
+            const rows = [
+                ["浏览", funnel.viewUsers || 0],
+                ["加购", funnel.cartUsers || 0],
+                ["下单", funnel.orderUsers || 0],
+                ["支付", funnel.payUsers || 0]
+            ];
+            const max = Math.max(...rows.map(([, value]) => Number(value)), 1);
+            document.getElementById("funnelList").innerHTML = rows.map(([name, value]) => {
+                const width = Math.max(4, Number(value) / max * 100);
+                return `
+                    <div class="funnel-row">
+                        <span class="funnel-name">${name}</span>
+                        <span class="funnel-track">
+                            <span class="funnel-bar" style="width: ${width}%"></span>
+                        </span>
+                        <span class="funnel-value">${formatNumber(value)}</span>
+                    </div>
+                `;
+            }).join("");
+        }
+
+        function renderBarSummary(id, entries) {
+            const target = document.getElementById(id);
+            if (!target) {
+                return;
+            }
+            const max = Math.max(...entries.map(([, value]) => Number(value)), 1);
+            target.innerHTML = entries.map(([key, value], index) => {
+                const width = Math.max(4, Number(value) / max * 100);
+                return `
+                    <div class="bar-row">
+                        <span class="bar-name">${labels[key] || key}</span>
+                        <span class="bar-track">
+                            <span class="bar-fill" style="width: ${width}%; background: ${chartPalette[index % chartPalette.length]}"></span>
+                        </span>
+                        <span class="bar-value">${formatNumber(value)}</span>
+                    </div>
+                `;
+            }).join("");
+        }
+
+        function renderTable(id, entries, emptyText) {
+            const table = document.getElementById(id);
+            if (!entries.length) {
+                table.innerHTML = `<tr><td colspan="2">${emptyText}</td></tr>`;
+                return;
+            }
+            table.innerHTML = entries.map(([key, value]) => `
+                <tr>
+                    <td>${labels[key] || key}</td>
+                    <td>${formatNumber(value)}</td>
+                </tr>
+            `).join("");
+        }
+
+        function renderDailySummary(stats) {
+            const target = document.getElementById("dailySummary");
+            const dates = Object.keys(stats.dailyPv || {}).sort().slice(-4);
+            if (!dates.length) {
+                target.innerHTML = "";
+                return;
+            }
+            target.innerHTML = dates.map((date) => `
+                <div class="daily-row">
+                    <span class="daily-date">${date}</span>
+                    <span class="daily-chip"><span>PV</span><strong>${formatNumber(stats.dailyPv[date] || 0)}</strong></span>
+                    <span class="daily-chip"><span>UV</span><strong>${formatNumber((stats.dailyUv || {})[date] || 0)}</strong></span>
+                </div>
+            `).join("");
+        }
+
+        function renderDashboard(stats) {
+            renderMetrics(stats);
+            renderBarSummary("eventSummary", orderedEntries(stats.eventTypeStats, ["view", "cart", "order", "pay"]));
+            renderBarSummary("channelSummary", orderedEntries(stats.channelStats, ["app", "web", "miniprogram"]));
+            renderEventChart(stats);
+            renderChannelChart(stats);
+            renderDailyChart(stats);
+            renderDailySummary(stats);
+            renderFunnel(stats);
+            renderTable("deviceTable", sortedEntries(stats.deviceStats || {}), "暂无设备数据");
+            renderTable("categoryTable", sortedEntries(stats.topCategoryStats || {}), "暂无类目数据");
+            setStatus(stats);
+            document.getElementById("lastUpdated").textContent =
+                `最后刷新：${new Date().toLocaleString("zh-CN")}`;
+        }
+
+        async function loadDashboard() {
+            document.getElementById("cacheStatusText").textContent = "正在加载数据";
+            setChartMessage("eventChart", "正在加载事件统计");
+            setChartMessage("channelChart", "正在加载渠道统计");
+            setChartMessage("dailyChart", "正在加载每日趋势");
+            try {
+                const response = await fetch(apiUrl);
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                const payload = await response.json();
+                const stats = normalizePayload(payload);
+                if (!stats || !stats.eventTypeStats) {
+                    throw new Error("接口返回结构不匹配");
+                }
+                renderDashboard(stats);
+            } catch (error) {
+                setError(`加载失败：${error.message}`);
+                setChartMessage("eventChart", "无法获取事件统计，请先启动 ApiServer");
+                setChartMessage("channelChart", "无法获取渠道统计，请先启动 ApiServer");
+                setChartMessage("dailyChart", "无法获取每日趋势，请先启动 ApiServer");
+                document.getElementById("eventSummary").innerHTML = "";
+                document.getElementById("channelSummary").innerHTML = "";
+                document.getElementById("dailySummary").innerHTML = "";
+                document.getElementById("funnelList").innerHTML =
+                    '<div class="error-state">无法获取漏斗数据，请确认后端服务已启动</div>';
+                renderTable("deviceTable", [], "后端未连接，暂无设备数据");
+                renderTable("categoryTable", [], "后端未连接，暂无类目数据");
+                document.getElementById("lastUpdated").textContent =
+                    "请确认 ApiServer 已启动，并能访问 http://localhost:8080/api/stats";
+            }
+        }
+
+        document.getElementById("refreshButton").addEventListener("click", loadDashboard);
+        loadDashboard();
+    </script>
+</body>
+</html>
