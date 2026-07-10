@@ -28,6 +28,7 @@ java-course-design/
 │     └─ util/
 ├─ benchmark/
 ├─ web/
+├─ dashboard.html
 ├─ sql/schema.sql
 ├─ docker/docker-compose.yml
 ├─ docs/
@@ -49,6 +50,8 @@ java-course-design/
 - Redis：`localhost:6379`
 - 数据库：`course_design`
 - 应用账号：`app_user / app_pass`
+
+上述数据库账号和密码仅用于本地 Docker 演示环境，不应直接用于生产环境。
 
 ## 启动 MySQL / Redis
 
@@ -124,7 +127,7 @@ mvn -pl core clean verify
 core/target/site/jacoco/index.html
 ```
 
-当前 core 模块 JaCoCo 行覆盖率为 86.81%，满足 60% 要求。
+当前验收记录中，core 模块 JaCoCo 行覆盖率为 86.81%。覆盖率以重新执行上述命令后生成的 HTML 报告为准。
 
 ## 运行 JMH
 
@@ -165,6 +168,17 @@ http://localhost:8080/api/stats/top-category
 
 `/api/stats` 会返回 JSON 统计结果，并通过 Redis 缓存统计快照。启动时会使用 `CompletableFuture` 异步预热缓存。
 
+## 使用前端仪表板
+
+保持 Javalin API 在 `8080` 端口运行，然后直接在浏览器中打开项目根目录下的 `dashboard.html`。仪表板会调用统计 API，展示以下分析结果：
+
+- 行为日志总量、日均 UV、支付转化率和 Top 商品类目
+- 事件类型统计与整体漏斗
+- 渠道分布、设备分布和每日 PV/UV
+- 渠道漏斗、设备漏斗等多维度下钻结果
+
+页面右上角会显示当前数据来自 Redis 缓存，并可通过“刷新”按钮重新获取统计快照。如果页面提示 `Failed to fetch`，应先确认 Docker 服务和 Javalin API 均已启动，并访问 `http://localhost:8080/api/health` 检查接口是否返回 `OK`。
+
 ## Redis 验证
 
 ```powershell
@@ -181,13 +195,5 @@ docker exec java-redis redis-cli TTL stats:eventType
 - Day3：`benchmark/src/main/java/edu/gpnu/bigdata/benchmark/StreamBenchmark.java`、`docs/jmh-report.md`
 - Day4：`docs/code-review.md`
 - 端到端验收：`docs/e2e-verification.md`
-
-## Git 仓库
-
-私有仓库地址：
-
-```text
-https://github.com/CR-730/java-course-design
-```
-
-说明：仓库名称为 `java-course-design`。
+- VisualVM 性能分析：`docs/performance-analysis.md`、`docs/performance/`
+- 项目报告：`docs/项目报告.docx`

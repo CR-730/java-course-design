@@ -47,4 +47,4 @@
 
 - API 与 Redis/MySQL 已完成端到端验证，记录位于 `docs/e2e-verification.md`。
 - 本机使用 JDK 25，运行时会输出 Maven/JDK 对部分旧 API 的警告，但不影响编译和测试结果。
-- 未实现前端仪表盘，加分项暂未做；当前目标是满足老师硬性要求。
+- 已实现前端数据仪表盘，通过 fetch 调用 `/api/stats` 展示统计结果。

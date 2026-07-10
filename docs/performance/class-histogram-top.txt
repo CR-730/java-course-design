@@ -1,0 +1,40 @@
+﻿43924:
+ num     #instances         #bytes  class name (module)
+-------------------------------------------------------
+   1:        116660        8708880  [B (java.base@25.0.2)
+   2:        110555        2653320  java.lang.String (java.base@25.0.2)
+   3:         10823        1380240  java.lang.Class (java.base@25.0.2)
+   4:         36618        1171776  java.util.concurrent.ConcurrentHashMap$Node (java.base@25.0.2)
+   5:         15423        1005960  [Ljava.lang.Object; (java.base@25.0.2)
+   6:          1707         942248  [C (java.base@25.0.2)
+   7:          4758         558616  [I (java.base@25.0.2)
+   8:         16689         534048  java.util.HashMap$Node (java.base@25.0.2)
+   9:          5514         485232  java.lang.reflect.Method (java.base@25.0.2)
+  10:          3959         412392  [Ljava.util.HashMap$Node; (java.base@25.0.2)
+  11:          7354         294160  java.util.LinkedHashMap$Entry (java.base@25.0.2)
+  12:           419         293224  [Ljava.util.concurrent.ConcurrentHashMap$Node; (java.base@25.0.2)
+  13:         11350         272400  java.util.ArrayList (java.base@25.0.2)
+  14:         12563         201008  java.lang.Object (java.base@25.0.2)
+  15:          3702         177696  java.lang.invoke.MemberName (java.base@25.0.2)
+  16:          4246         169840  org.codehaus.plexus.util.xml.Xpp3Dom
+  17:          6262         165552  [Ljava.lang.Class; (java.base@25.0.2)
+  18:          2084         150048  java.lang.reflect.Field (java.base@25.0.2)
+  19:          2648         127104  java.util.HashMap (java.base@25.0.2)
+  20:          1869         119616  java.util.LinkedHashMap (java.base@25.0.2)
+  21:          1019          97824  org.apache.maven.model.Dependency
+  22:          2303          92120  java.lang.invoke.MethodType (java.base@25.0.2)
+  23:          1275          91800  org.apache.maven.model.Plugin
+  24:          2276          91040  jdk.internal.util.SoftReferenceKey (java.base@25.0.2)
+  25:          2215          88600  java.util.TreeMap$Entry (java.base@25.0.2)
+  26:          1485          83160  org.apache.maven.plugin.descriptor.Parameter
+  27:           378          74784  [Ljdk.internal.vm.FillerElement; (java.base@25.0.2)
+  28:          2303          73696  jdk.internal.util.WeakReferenceKey (java.base@25.0.2)
+  29:          1622          68904  [Ljava.lang.String; (java.base@25.0.2)
+  30:           783          68904  org.apache.maven.model.Developer
+  31:           959          61376  java.lang.Class$ReflectionData (java.base@25.0.2)
+  32:           852          61344  java.lang.reflect.Constructor (java.base@25.0.2)
+  33:          1467          58680  java.lang.invoke.BoundMethodHandle$Species_LL (java.base@25.0.2)
+  34:          1312          52480  java.lang.ref.SoftReference (java.base@25.0.2)
+  35:          2021          48504  java.lang.invoke.ResolvedMethodName (java.base@25.0.2)
+  36:          1439          46048  sun.security.util.ObjectIdentifier (java.base@25.0.2)
+  37:           716          45824  java.util.concurrent.ConcurrentHashMap (java.base@25.0.2)

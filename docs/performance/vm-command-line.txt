@@ -1,0 +1,6 @@
+﻿43924:
+VM Arguments:
+jvm_args: -Dclassworlds.conf=D:\ruanjian_data\apache-maven-3.9.9\bin\m2.conf -Dmaven.home=D:\ruanjian_data\apache-maven-3.9.9 -Dlibrary.jansi.path=D:\ruanjian_data\apache-maven-3.9.9\lib\jansi-native -Dmaven.multiModuleProjectDirectory=D:\???\???or????\Java??\java-course-design 
+java_command: org.codehaus.plexus.classworlds.launcher.Launcher -pl web exec:java -Dexec.mainClass=edu.gpnu.bigdata.web.ApiServer
+java_class_path (initial): D:\ruanjian_data\apache-maven-3.9.9\boot\plexus-classworlds-2.8.0.jar
+Launcher Type: SUN_STANDARD
