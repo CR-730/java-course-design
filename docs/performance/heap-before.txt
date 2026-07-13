@@ -1,3 +1,0 @@
-﻿43924:
-garbage-first heap   total reserved 3997696K, committed 180224K, used 107640K [0x000000070c000000, 0x0000000800000000)
- region size 2048K, 19 young (38912K), 2 survivors (4096K)

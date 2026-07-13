@@ -187,13 +187,6 @@ docker exec java-redis redis-cli KEYS stats:*
 docker exec java-redis redis-cli TTL stats:eventType
 ```
 
-## 过程文档
+## 项目文档
 
-- 选题设计说明书：`docs/project-design.md`
-- Day1：`docs/er-diagram.drawio`、`docs/er-diagram.png`、`docs/data-dictionary.md`、`sql/schema.sql`
-- Day2：`core/src/main/java/edu/gpnu/bigdata/service/StatsService.java`、`report/user-behavior-report.txt`
-- Day3：`benchmark/src/main/java/edu/gpnu/bigdata/benchmark/StreamBenchmark.java`、`docs/jmh-report.md`
-- Day4：`docs/code-review.md`
-- 端到端验收：`docs/e2e-verification.md`
-- VisualVM 性能分析：`docs/performance-analysis.md`、`docs/performance/`
-- 项目报告：`docs/项目报告.docx`
+- [项目报告](项目报告.docx)
